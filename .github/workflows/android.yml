@@ -6,39 +6,36 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v4.2.2
 
       - name: Set up JDK 17
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v4.5.0
         with:
           distribution: 'temurin'
           java-version: '17'
 
       - name: Set up Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v5.3.0
         with:
           python-version: '3.11'
 
-      - name: Install System and Python Dependencies
+      - name: Install Build Environment
         run: |
-          pip install --upgrade pip
+          python -m pip install --upgrade pip
           pip install --upgrade setuptools virtualenv wheel
           pip install cython==0.29.38 buildozer kivy==2.3.0 pillow
 
-      - name: Build Android APK with Auto-Accept
+      - name: Build Android APK with Buildozer
         run: |
-          export ANDROID_HOME=$HOME/.buildozer/android/platform/android-sdk
-          export ANDROID_NDK_HOME=$HOME/.buildozer/android/platform/android-ndk-r25b
-          export PATH=$PATH:$ANDROID_HOME/tools:$ANDROID_HOME/platform-tools
           yes | buildozer android debug
         env:
           BUILDOZER_WARN_ON_ROOT: 0
 
       - name: Upload APK Artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v4.5.0
         with:
           name: Bars-Premium-APK
           path: bin/*.apk
