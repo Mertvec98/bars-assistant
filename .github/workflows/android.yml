@@ -6,7 +6,7 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -20,19 +20,16 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.11'
+          python-version: '3.10'
 
-      - name: Install System Dependencies
+      - name: Install Build Environment
         run: |
-          sudo apt-get update
-          sudo apt-get install -y libsqlite3-dev lzip standard-clzip zlib1g-dev libffi-dev libssl-dev autoconf libtool pkg-config
+          python -m pip install --upgrade pip
+          pip install --upgrade setuptools virtualenv wheel
+          pip install cython==0.29.38
+          pip install buildozer kivy==2.3.0
 
-      - name: Install Buildozer and Cython
-        run: |
-          pip install --upgrade pip
-          pip install buildozer cython==0.29.38 kivy==2.3.0
-
-      - name: Build with Buildozer
+      - name: Build Android APK with Buildozer
         run: |
           yes | buildozer android debug
         env:
