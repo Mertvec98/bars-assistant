@@ -6,19 +6,29 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Build Android APK with Buildozer Action
-        uses: Android-Actions/buildozer-action@v1
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
         with:
-          repository_path: .
-          buildozer_version: stable
+          distribution: 'temurin'
+          java-version: '17'
 
-      - name: Upload APK Artifact
-        uses: actions/upload-artifact@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
         with:
-          name: Bars-Premium-APK
-          path: bin/*.apk
+          python-version: '3.10'
+
+      - name: Install Build Environment
+        run: |
+          python -m pip install --upgrade pip
+          pip install --upgrade setuptools virtualenv wheel
+          pip install cython==0.29.38
+          pip install buildozer kivy==2.3.0
+
+      - name: Build Android APK
+        run: |
+          buildozer android debug
